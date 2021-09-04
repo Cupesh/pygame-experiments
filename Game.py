@@ -1,5 +1,6 @@
 import pygame
 import sys
+import map
 from Scene import PlayScene
 
 SCREEN_WIDTH = 800
@@ -10,7 +11,7 @@ class Game():
     def __init__(self):
         self.active_scene = PlayScene()
 
-    def start_pygame():
+    def start_pygame(self):
         global screen, clock
 
         pygame.init()
@@ -18,6 +19,10 @@ class Game():
         pygame.mixer.init()
         pygame.display.set_caption('a game')
         clock = pygame.time.Clock()
+
+        world = map.create_map()
+        self.active_scene = PlayScene(world)
+        
 
     def run(self):
         while self.active_scene != None:
