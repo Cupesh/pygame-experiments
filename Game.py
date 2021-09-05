@@ -1,6 +1,6 @@
 import pygame
 import sys
-import map
+import Map
 from Scene import PlayScene
 
 SCREEN_WIDTH = 800
@@ -9,7 +9,7 @@ FPS = 60
 
 class Game():
     def __init__(self):
-        self.active_scene = PlayScene()
+        self.active_scene = None
 
     def start_pygame(self):
         global screen, clock
@@ -20,10 +20,11 @@ class Game():
         pygame.display.set_caption('a game')
         clock = pygame.time.Clock()
 
-        world = map.create_map()
-        self.active_scene = PlayScene(world)
+    def load_assets(self):
+        playScene_map = Map.Map('pygame test map.tmx')
+        playScene_world = playScene_map.create_map()
+        self.active_scene = PlayScene(playScene_world)
         
-
     def run(self):
         while self.active_scene != None:
             pressed_keys = pygame.key.get_pressed()

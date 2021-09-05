@@ -17,15 +17,18 @@ BLUE = (0,0,255)
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
-WORLD_WIDTH = 1600
-WORLD_HEIGHT = 1600
+SCALED_SCREEN_WIDTH = 320
+SCALED_SCREEN_HEIGHT = 240
 
 SCREEN_CENTRE_X = SCREEN_WIDTH // 2
 SCREEN_CENTRE_Y = SCREEN_HEIGHT // 2
 
+PLAYER_CENTER_X = SCALED_SCREEN_WIDTH // 2
+PLAYER_CENTRE_Y = SCALED_SCREEN_HEIGHT // 2
+
 player = Player.Player()
-player.x_pos = SCREEN_CENTRE_X
-player.y_pos = SCREEN_CENTRE_Y
+player.x_pos = PLAYER_CENTER_X
+player.y_pos = PLAYER_CENTRE_Y
 speed = player.speed
 
 class Scene():
@@ -38,48 +41,41 @@ class Scene():
 class PlayScene(Scene):
     def __init__(self, map=None):
         super().__init__()
-        self.world_x = SCREEN_WIDTH - 900
-        self.world_y = SCREEN_HEIGHT - 700
-
         self.world = map
-
-        '''
-        self.world = pygame.Surface((WORLD_WIDTH, WORLD_HEIGHT))
-        self.world.fill(BLUE)
-        self.ground = pygame.Surface((900, 700))
-        self.ground.fill(GREEN)
-        self.world.blit(self.ground, ( ((WORLD_WIDTH - 900) // 2),((WORLD_HEIGHT - 700) // 2)) )
-        '''
+        self.width = self.world.get_width()
+        self.height = self.world.get_height()
+        self.world_x = SCREEN_WIDTH - self.width
+        self.world_y = SCREEN_HEIGHT - self.height
 
     def controls(self, pressed_keys):
-        if pressed_keys[K_DOWN] and player.y_pos >= SCREEN_CENTRE_X:
+        if pressed_keys[K_DOWN] and player.y_pos >= PLAYER_CENTRE_Y:
             self.world_y -= speed
-        elif pressed_keys[K_DOWN] and player.y_pos < SCREEN_CENTRE_X:
+        elif pressed_keys[K_DOWN] and player.y_pos < PLAYER_CENTRE_Y:
             player.y_pos += speed
 
-        if pressed_keys[K_UP] and player.y_pos <= SCREEN_CENTRE_X:
+        if pressed_keys[K_UP] and player.y_pos <= PLAYER_CENTRE_Y:
             self.world_y += speed
-        elif pressed_keys[K_UP] and player.y_pos > SCREEN_CENTRE_X:
+        elif pressed_keys[K_UP] and player.y_pos > PLAYER_CENTRE_Y:
             player.y_pos -= speed 
 
-        if pressed_keys[K_RIGHT] and player.x_pos >= SCREEN_CENTRE_Y:
+        if pressed_keys[K_RIGHT] and player.x_pos >= PLAYER_CENTER_X:
             self.world_x -= speed
-        elif pressed_keys[K_RIGHT] and player.x_pos < SCREEN_CENTRE_Y:
+        elif pressed_keys[K_RIGHT] and player.x_pos < PLAYER_CENTER_X:
             player.x_pos += speed
 
-        if pressed_keys[K_LEFT] and player.x_pos <= SCREEN_CENTRE_Y:
+        if pressed_keys[K_LEFT] and player.x_pos <= PLAYER_CENTER_X:
             self.world_x += speed
-        elif pressed_keys[K_LEFT] and player.x_pos > SCREEN_CENTRE_Y:
+        elif pressed_keys[K_LEFT] and player.x_pos > PLAYER_CENTER_X:
             player.x_pos -= speed
 
-        if self.world_x < SCREEN_WIDTH - WORLD_WIDTH:
-            self.world_x = SCREEN_WIDTH - WORLD_WIDTH
+        if self.world_x < -self.width + SCALED_SCREEN_WIDTH:
+            self.world_x = -self.width + SCALED_SCREEN_WIDTH
             player.x_pos += speed
         if self.world_x > 0:
             self.world_x = 0
             player.x_pos -= speed
-        if self.world_y < SCREEN_HEIGHT - WORLD_HEIGHT:
-            self.world_y = SCREEN_HEIGHT - WORLD_HEIGHT
+        if self.world_y < -self.height + SCALED_SCREEN_HEIGHT:
+            self.world_y = -self.height + SCALED_SCREEN_HEIGHT
             player.y_pos += speed
         if self.world_y > 0:
             self.world_y = 0
@@ -94,6 +90,11 @@ class PlayScene(Scene):
 
 
     def render(self):
+        scaled_screen = pygame.Surface((SCALED_SCREEN_WIDTH, SCALED_SCREEN_HEIGHT))
+        scaled_screen.blit(self.world, [self.world_x, self.world_y])
+        scaled_screen.blit(player.surf, [player.x_pos, player.y_pos])
+
         screen = pygame.display.get_surface()
-        screen.blit(self.world, [self.world_x, self.world_y])
-        screen.blit(player.surf, [player.x_pos, player.y_pos])
+        pygame.transform.scale(scaled_screen, (800, 600), screen)
+        
+
